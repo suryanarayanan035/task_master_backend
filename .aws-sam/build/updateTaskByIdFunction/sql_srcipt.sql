@@ -1,0 +1,3 @@
+CREATE TABLE "Users" ("id" BIGSERIAL PRIMARY KEY, "email" TEXT UNIQUE NOT NULL,  "created
+At" TIMESTAMPTZ, "updatedAt" TIMESTAMPTZ);
+

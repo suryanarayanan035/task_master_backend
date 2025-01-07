@@ -1,0 +1,495 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  task_master_users
+Transform:
+- AWS::Serverless-2016-10-31
+
+# Resources declares the AWS resources that you want to include in the stack
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
+Resources:
+  # Each Lambda function is defined by properties:
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+  # This is a Lambda function config associated with the source code: get-all-items.js
+    # This is a Lambda function config associated with the source code: put-item.js
+    # Simple syntax to create a DynamoDB table with a single attribute primary key, more in
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable
+
+  # DynamoDB table to store item: {id: &lt;ID&gt;, name: &lt;NAME&gt;}
+  getProjectsByUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-projects-by-user.handler
+      Runtime: nodejs22.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for getting projects of a user.
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0c1d8666195839860
+        SubnetIds:
+          - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+            - cognito-idp:AdminGetUser
+            - rds-data:ExecuteSql
+            - rds-data:ExecuteStatement
+            - rds-data:CommitTransaction
+            - rds-data:BeginTransaction
+            - rds-data:BatchExecuteStatement
+            - rds-data:RollbackTransaction
+            - rds-db:connect
+          Resource: 
+            - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+            - "*"
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskMasterApi
+            Path: /users/projects
+            Method: GET
+            Auth:
+              Authorizer: NONE
+              OverrideApiAuth: true
+  synchronizeModelsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/synchronize-models.handler
+      Runtime: nodejs22.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for synchronizing all models.
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0c1d8666195839860
+        SubnetIds:
+          - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+            - rds-data:ExecuteSql
+            - rds-data:ExecuteStatement
+            - rds-data:CommitTransaction
+            - rds-data:BeginTransaction
+            - rds-data:BatchExecuteStatement
+            - rds-data:RollbackTransaction
+            - rds-db:connect
+          Resource: 
+            - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+            - "*"
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskMasterApi
+            Path: /synchronize
+            Method: POST
+
+  createProjectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/create-project.createProjectHandler
+      Runtime: nodejs22.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for creating a new user.
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0c1d8666195839860
+        SubnetIds:
+          - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+            - rds-data:ExecuteSql
+            - rds-data:ExecuteStatement
+            - rds-data:CommitTransaction
+            - rds-data:BeginTransaction
+            - rds-data:BatchExecuteStatement
+            - rds-data:RollbackTransaction
+            - rds-db:connect
+          Resource: 
+            - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+            - "*"
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskMasterApi
+            Path: /projects
+            Method: POST
+
+
+
+  getUsersByProjectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-users-by-project.handler
+      Runtime: nodejs22.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for getting users on a project.
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0c1d8666195839860
+        SubnetIds:
+          - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+            - cognito-idp:AdminCreateUser
+            - cognito-idp:AdminAddUserToGroup
+            - cognito-idp:AdminSetUserPassword
+            - cognito-idp:AdminConfirmSignUp
+            - rds-data:ExecuteSql
+            - rds-data:ExecuteStatement
+            - rds-data:CommitTransaction
+            - rds-data:BeginTransaction
+            - rds-data:BatchExecuteStatement
+            - rds-data:RollbackTransaction
+            - rds-db:connect
+          Resource: 
+            - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+            - "*"
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskMasterApi
+            Path: /projects/{projectId}/users
+            Method: GET
+  addUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/add-user.handler
+      Runtime: nodejs22.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for creating a new user.
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0c1d8666195839860
+        SubnetIds:
+          - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+            - cognito-idp:AdminCreateUser
+            - cognito-idp:AdminAddUserToGroup
+            - cognito-idp:AdminSetUserPassword
+            - cognito-idp:AdminConfirmSignUp
+            - rds-data:ExecuteSql
+            - rds-data:ExecuteStatement
+            - rds-data:CommitTransaction
+            - rds-data:BeginTransaction
+            - rds-data:BatchExecuteStatement
+            - rds-data:RollbackTransaction
+            - rds-db:connect
+          Resource: 
+            - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+            - "*"
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskMasterApi
+            Path: /users
+            Method: POST
+  createTaskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/create-task.handler
+      Runtime: nodejs22.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for creating a new task.
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0c1d8666195839860
+        SubnetIds:
+          - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+            - cognito-idp:AdminCreateUser
+            - cognito-idp:AdminAddUserToGroup
+            - cognito-idp:AdminSetUserPassword
+            - cognito-idp:AdminConfirmSignUp
+            - rds-data:ExecuteSql
+            - rds-data:ExecuteStatement
+            - rds-data:CommitTransaction
+            - rds-data:BeginTransaction
+            - rds-data:BatchExecuteStatement
+            - rds-data:RollbackTransaction
+            - rds-db:connect
+          Resource: 
+            - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+            - "*"
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskMasterApi
+            Path: /tasks
+            Method: POST
+  
+  getTasksByProjectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-tasks-by-project.handler
+      Runtime: nodejs22.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for fetchings tasks of a project.
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0c1d8666195839860
+        SubnetIds:
+          - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+            - cognito-idp:AdminCreateUser
+            - cognito-idp:AdminAddUserToGroup
+            - cognito-idp:AdminSetUserPassword
+            - cognito-idp:AdminConfirmSignUp
+            - rds-data:ExecuteSql
+            - rds-data:ExecuteStatement
+            - rds-data:CommitTransaction
+            - rds-data:BeginTransaction
+            - rds-data:BatchExecuteStatement
+            - rds-data:RollbackTransaction
+            - rds-db:connect
+          Resource: 
+            - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+            - "*"
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskMasterApi
+            Path: /projects/{projectId}/tasks
+            Method: GET
+
+
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name:
+        Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName:
+        Ref: ApplicationResourceGroup
+      AutoConfigurationEnabled: 'true'
+
+
+
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name:
+        Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName:
+        Ref: ApplicationResourceGroup
+      AutoConfigurationEnabled: 'true'
+
+  getTaskByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-task-by-id.handler
+      Runtime: nodejs22.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for fetching the task by id.
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0c1d8666195839860
+        SubnetIds:
+          - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+            - cognito-idp:AdminCreateUser
+            - cognito-idp:AdminAddUserToGroup
+            - cognito-idp:AdminSetUserPassword
+            - cognito-idp:AdminConfirmSignUp
+            - rds-data:ExecuteSql
+            - rds-data:ExecuteStatement
+            - rds-data:CommitTransaction
+            - rds-data:BeginTransaction
+            - rds-data:BatchExecuteStatement
+            - rds-data:RollbackTransaction
+            - rds-db:connect
+          Resource: 
+            - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+            - "*"
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskMasterApi
+            Path: /tasks/{taskId}
+            Method: GET
+  updateTaskByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/update-task-by-id.handler
+      Runtime: nodejs22.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for fetching the task by id.
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0c1d8666195839860
+        SubnetIds:
+          - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+            - cognito-idp:AdminCreateUser
+            - cognito-idp:AdminAddUserToGroup
+            - cognito-idp:AdminSetUserPassword
+            - cognito-idp:AdminConfirmSignUp
+            - rds-data:ExecuteSql
+            - rds-data:ExecuteStatement
+            - rds-data:CommitTransaction
+            - rds-data:BeginTransaction
+            - rds-data:BatchExecuteStatement
+            - rds-data:RollbackTransaction
+            - rds-db:connect
+          Resource: 
+            - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+            - "*"
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TaskMasterApi
+            Path: /tasks/{taskId}
+            Method: PUT
+
+
+
+  TaskMasterDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: task_master
+      Engine: postgres
+      EngineVersion: 16.3
+      DBInstanceClass: db.t4g.micro
+      MasterUsername: task_master
+      MasterUserPassword: task_master
+      AllocatedStorage: 20
+      MultiAZ: false
+
+  TaskMasterApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: false
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+            Identity: 
+              Header: Authorization
+              AuthType: "COGNITO_USER_POOLS"
+
+
+Outputs:
+  WebEndpoint:
+    Description: API Gateway endpoint URL for Prod stage
+    Value: !Sub "https://${TaskMasterApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    LoggingConfig:
+      LogFormat: JSON
