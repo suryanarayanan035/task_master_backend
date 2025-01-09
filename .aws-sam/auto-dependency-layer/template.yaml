@@ -1,0 +1,531 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: task_master_backend
+Transform:
+- AWS::Serverless-2016-10-31
+Resources:
+  getProjectsByUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-projects-by-user.handler
+      Runtime: nodejs22.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for getting projects of a user.
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-0c1d8666195839860
+        SubnetIds:
+        - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+          - cognito-idp:AdminGetUser
+          - rds-data:ExecuteSql
+          - rds-data:ExecuteStatement
+          - rds-data:CommitTransaction
+          - rds-data:BeginTransaction
+          - rds-data:BatchExecuteStatement
+          - rds-data:RollbackTransaction
+          - rds-db:connect
+          Resource:
+          - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+          - '*'
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: TaskMasterApi
+            Path: /users/projects
+            Method: GET
+            Auth:
+              Authorizer: NONE
+              OverrideApiAuth: true
+      CodeUri: getProjectsByUserFunction
+      Layers:
+      - Fn::GetAtt:
+        - AwsSamAutoDependencyLayerNestedStack
+        - Outputs.getProjectsByUserFunction52158721DepLayer
+    Metadata:
+      SamResourceId: getProjectsByUserFunction
+  synchronizeModelsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/synchronize-models.handler
+      Runtime: nodejs22.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for synchronizing all models.
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-0c1d8666195839860
+        SubnetIds:
+        - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+          - rds-data:ExecuteSql
+          - rds-data:ExecuteStatement
+          - rds-data:CommitTransaction
+          - rds-data:BeginTransaction
+          - rds-data:BatchExecuteStatement
+          - rds-data:RollbackTransaction
+          - rds-db:connect
+          Resource:
+          - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+          - '*'
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: TaskMasterApi
+            Path: /synchronize
+            Method: POST
+      CodeUri: synchronizeModelsFunction
+      Layers:
+      - Fn::GetAtt:
+        - AwsSamAutoDependencyLayerNestedStack
+        - Outputs.synchronizeModelsFunction3f54f328DepLayer
+    Metadata:
+      SamResourceId: synchronizeModelsFunction
+  createProjectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/create-project.createProjectHandler
+      Runtime: nodejs22.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for creating a new user.
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-0c1d8666195839860
+        SubnetIds:
+        - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+          - rds-data:ExecuteSql
+          - rds-data:ExecuteStatement
+          - rds-data:CommitTransaction
+          - rds-data:BeginTransaction
+          - rds-data:BatchExecuteStatement
+          - rds-data:RollbackTransaction
+          - rds-db:connect
+          Resource:
+          - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+          - '*'
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: TaskMasterApi
+            Path: /projects
+            Method: POST
+      CodeUri: createProjectFunction
+      Layers:
+      - Fn::GetAtt:
+        - AwsSamAutoDependencyLayerNestedStack
+        - Outputs.createProjectFunction6020ebb8DepLayer
+    Metadata:
+      SamResourceId: createProjectFunction
+  getUsersByProjectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-users-by-project.handler
+      Runtime: nodejs22.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for getting users on a project.
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-0c1d8666195839860
+        SubnetIds:
+        - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+          - cognito-idp:AdminCreateUser
+          - cognito-idp:AdminAddUserToGroup
+          - cognito-idp:AdminSetUserPassword
+          - cognito-idp:AdminConfirmSignUp
+          - rds-data:ExecuteSql
+          - rds-data:ExecuteStatement
+          - rds-data:CommitTransaction
+          - rds-data:BeginTransaction
+          - rds-data:BatchExecuteStatement
+          - rds-data:RollbackTransaction
+          - rds-db:connect
+          Resource:
+          - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+          - '*'
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: TaskMasterApi
+            Path: /projects/{projectId}/users
+            Method: GET
+      CodeUri: getUsersByProjectFunction
+      Layers:
+      - Fn::GetAtt:
+        - AwsSamAutoDependencyLayerNestedStack
+        - Outputs.getUsersByProjectFunction09607603DepLayer
+    Metadata:
+      SamResourceId: getUsersByProjectFunction
+  addUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/add-user.handler
+      Runtime: nodejs22.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for creating a new user.
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-0c1d8666195839860
+        SubnetIds:
+        - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+          - cognito-idp:AdminCreateUser
+          - cognito-idp:AdminAddUserToGroup
+          - cognito-idp:AdminSetUserPassword
+          - cognito-idp:AdminConfirmSignUp
+          - rds-data:ExecuteSql
+          - rds-data:ExecuteStatement
+          - rds-data:CommitTransaction
+          - rds-data:BeginTransaction
+          - rds-data:BatchExecuteStatement
+          - rds-data:RollbackTransaction
+          - rds-db:connect
+          Resource:
+          - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+          - '*'
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: TaskMasterApi
+            Path: /users
+            Method: POST
+      CodeUri: addUserFunction
+      Layers:
+      - Fn::GetAtt:
+        - AwsSamAutoDependencyLayerNestedStack
+        - Outputs.addUserFunction22418068DepLayer
+    Metadata:
+      SamResourceId: addUserFunction
+  createTaskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/create-task.handler
+      Runtime: nodejs22.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for creating a new task.
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-0c1d8666195839860
+        SubnetIds:
+        - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+          - cognito-idp:AdminCreateUser
+          - cognito-idp:AdminAddUserToGroup
+          - cognito-idp:AdminSetUserPassword
+          - cognito-idp:AdminConfirmSignUp
+          - rds-data:ExecuteSql
+          - rds-data:ExecuteStatement
+          - rds-data:CommitTransaction
+          - rds-data:BeginTransaction
+          - rds-data:BatchExecuteStatement
+          - rds-data:RollbackTransaction
+          - rds-db:connect
+          Resource:
+          - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+          - '*'
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: TaskMasterApi
+            Path: /tasks
+            Method: POST
+      CodeUri: createTaskFunction
+      Layers:
+      - Fn::GetAtt:
+        - AwsSamAutoDependencyLayerNestedStack
+        - Outputs.createTaskFunctionb3dd98b0DepLayer
+    Metadata:
+      SamResourceId: createTaskFunction
+  getTasksByProjectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-tasks-by-project.handler
+      Runtime: nodejs22.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for fetchings tasks of a project.
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-0c1d8666195839860
+        SubnetIds:
+        - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+          - cognito-idp:AdminCreateUser
+          - cognito-idp:AdminAddUserToGroup
+          - cognito-idp:AdminSetUserPassword
+          - cognito-idp:AdminConfirmSignUp
+          - rds-data:ExecuteSql
+          - rds-data:ExecuteStatement
+          - rds-data:CommitTransaction
+          - rds-data:BeginTransaction
+          - rds-data:BatchExecuteStatement
+          - rds-data:RollbackTransaction
+          - rds-db:connect
+          Resource:
+          - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+          - '*'
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: TaskMasterApi
+            Path: /projects/{projectId}/tasks
+            Method: GET
+      CodeUri: getTasksByProjectFunction
+      Layers:
+      - Fn::GetAtt:
+        - AwsSamAutoDependencyLayerNestedStack
+        - Outputs.getTasksByProjectFunctiona226f81eDepLayer
+    Metadata:
+      SamResourceId: getTasksByProjectFunction
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name:
+        Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName:
+        Ref: ApplicationResourceGroup
+      AutoConfigurationEnabled: 'true'
+  getTaskByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-task-by-id.handler
+      Runtime: nodejs22.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for fetching the task by id.
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-0c1d8666195839860
+        SubnetIds:
+        - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+          - cognito-idp:AdminCreateUser
+          - cognito-idp:AdminAddUserToGroup
+          - cognito-idp:AdminSetUserPassword
+          - cognito-idp:AdminConfirmSignUp
+          - rds-data:ExecuteSql
+          - rds-data:ExecuteStatement
+          - rds-data:CommitTransaction
+          - rds-data:BeginTransaction
+          - rds-data:BatchExecuteStatement
+          - rds-data:RollbackTransaction
+          - rds-db:connect
+          Resource:
+          - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+          - '*'
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: TaskMasterApi
+            Path: /tasks/{taskId}
+            Method: GET
+      CodeUri: getTaskByIdFunction
+      Layers:
+      - Fn::GetAtt:
+        - AwsSamAutoDependencyLayerNestedStack
+        - Outputs.getTaskByIdFunction7e50a5a5DepLayer
+    Metadata:
+      SamResourceId: getTaskByIdFunction
+  updateTaskByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/update-task-by-id.handler
+      Runtime: nodejs22.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: This function is responsible for fetching the task by id.
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-0c1d8666195839860
+        SubnetIds:
+        - subnet-043adc92adc4b8e0a
+      Policies:
+      - AWSLambdaVPCAccessExecutionRole
+      - Statement:
+        - Sid: CognitoCreateUserPolicy
+          Effect: Allow
+          Action:
+          - cognito-idp:AdminCreateUser
+          - cognito-idp:AdminAddUserToGroup
+          - cognito-idp:AdminSetUserPassword
+          - cognito-idp:AdminConfirmSignUp
+          - rds-data:ExecuteSql
+          - rds-data:ExecuteStatement
+          - rds-data:CommitTransaction
+          - rds-data:BeginTransaction
+          - rds-data:BatchExecuteStatement
+          - rds-data:RollbackTransaction
+          - rds-db:connect
+          Resource:
+          - arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+          - '*'
+      Environment:
+        Variables:
+          USER_POOL_ID: ap-south-1_iyQfb0wNX
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: TaskMasterApi
+            Path: /tasks/{taskId}
+            Method: PUT
+      CodeUri: updateTaskByIdFunction
+      Layers:
+      - Fn::GetAtt:
+        - AwsSamAutoDependencyLayerNestedStack
+        - Outputs.updateTaskByIdFunctionf422d4efDepLayer
+    Metadata:
+      SamResourceId: updateTaskByIdFunction
+  TaskMasterDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: task_master
+      Engine: postgres
+      EngineVersion: 16.3
+      DBInstanceClass: db.t4g.micro
+      MasterUsername: task_master
+      MasterUserPassword: task_master
+      AllocatedStorage: 20
+      MultiAZ: false
+  TaskMasterApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: '''GET,POST,PUT,DELETE,OPTIONS'''
+        AllowHeaders: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
+        AllowOrigin: '''*'''
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: false
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: arn:aws:cognito-idp:ap-south-1:767397682317:userpool/ap-south-1_iyQfb0wNX
+            Identity:
+              Header: Authorization
+              AuthType: COGNITO_USER_POOLS
+  AwsSamAutoDependencyLayerNestedStack:
+    DeletionPolicy: Delete
+    Metadata:
+      CreatedBy: AWS SAM CLI sync command
+    Properties:
+      TemplateURL: /home/surya/professional/client_projects/astravue/task_master_project/task_master_backend/.aws-sam/auto-dependency-layer/adl_nested_template.yaml
+    Type: AWS::CloudFormation::Stack
+Outputs:
+  WebEndpoint:
+    Description: API Gateway endpoint URL for Prod stage
+    Value:
+      Fn::Sub: https://${TaskMasterApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+Globals:
+  Function:
+    LoggingConfig:
+      LogFormat: JSON

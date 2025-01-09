@@ -1,0 +1,134 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS SAM CLI Nested Stack for Auto Dependency Layer Creation
+Metadata:
+  SamCliInfo: 1.132.0
+  key: AWS SAM CLI sync command
+Outputs:
+  addUserFunction22418068DepLayer:
+    Value:
+      Ref: addUserFunction22418068DepLayer
+  createProjectFunction6020ebb8DepLayer:
+    Value:
+      Ref: createProjectFunction6020ebb8DepLayer
+  createTaskFunctionb3dd98b0DepLayer:
+    Value:
+      Ref: createTaskFunctionb3dd98b0DepLayer
+  getProjectsByUserFunction52158721DepLayer:
+    Value:
+      Ref: getProjectsByUserFunction52158721DepLayer
+  getTaskByIdFunction7e50a5a5DepLayer:
+    Value:
+      Ref: getTaskByIdFunction7e50a5a5DepLayer
+  getTasksByProjectFunctiona226f81eDepLayer:
+    Value:
+      Ref: getTasksByProjectFunctiona226f81eDepLayer
+  getUsersByProjectFunction09607603DepLayer:
+    Value:
+      Ref: getUsersByProjectFunction09607603DepLayer
+  synchronizeModelsFunction3f54f328DepLayer:
+    Value:
+      Ref: synchronizeModelsFunction3f54f328DepLayer
+  updateTaskByIdFunctionf422d4efDepLayer:
+    Value:
+      Ref: updateTaskByIdFunctionf422d4efDepLayer
+Resources:
+  addUserFunction22418068DepLayer:
+    Metadata:
+      CreatedBy: AWS SAM CLI sync command
+    Properties:
+      CompatibleRuntimes:
+      - nodejs22.x
+      ContentUri: /home/surya/professional/client_projects/astravue/task_master_project/task_master_backend/.aws-sam/auto-dependency-layer/addUserFunction22418068DepLayer
+      Description: Auto created layer for dependencies of function addUserFunction
+      LayerName: task-master-useraa159203-addUserFunction22418068-DepLayer
+      RetentionPolicy: Delete
+    Type: AWS::Serverless::LayerVersion
+  createProjectFunction6020ebb8DepLayer:
+    Metadata:
+      CreatedBy: AWS SAM CLI sync command
+    Properties:
+      CompatibleRuntimes:
+      - nodejs22.x
+      ContentUri: /home/surya/professional/client_projects/astravue/task_master_project/task_master_backend/.aws-sam/auto-dependency-layer/createProjectFunction6020ebb8DepLayer
+      Description: Auto created layer for dependencies of function createProjectFunction
+      LayerName: task-master-useraa159203-createProjectFunction6020ebb8-DepLayer
+      RetentionPolicy: Delete
+    Type: AWS::Serverless::LayerVersion
+  createTaskFunctionb3dd98b0DepLayer:
+    Metadata:
+      CreatedBy: AWS SAM CLI sync command
+    Properties:
+      CompatibleRuntimes:
+      - nodejs22.x
+      ContentUri: /home/surya/professional/client_projects/astravue/task_master_project/task_master_backend/.aws-sam/auto-dependency-layer/createTaskFunctionb3dd98b0DepLayer
+      Description: Auto created layer for dependencies of function createTaskFunction
+      LayerName: task-master-useraa159203-createTaskFunctionb3dd98b0-DepLayer
+      RetentionPolicy: Delete
+    Type: AWS::Serverless::LayerVersion
+  getProjectsByUserFunction52158721DepLayer:
+    Metadata:
+      CreatedBy: AWS SAM CLI sync command
+    Properties:
+      CompatibleRuntimes:
+      - nodejs22.x
+      ContentUri: /home/surya/professional/client_projects/astravue/task_master_project/task_master_backend/.aws-sam/auto-dependency-layer/getProjectsByUserFunction52158721DepLayer
+      Description: Auto created layer for dependencies of function getProjectsByUserFunction
+      LayerName: task-master-useraa159203-getProjectsByUserFunct52158721-DepLayer
+      RetentionPolicy: Delete
+    Type: AWS::Serverless::LayerVersion
+  getTaskByIdFunction7e50a5a5DepLayer:
+    Metadata:
+      CreatedBy: AWS SAM CLI sync command
+    Properties:
+      CompatibleRuntimes:
+      - nodejs22.x
+      ContentUri: /home/surya/professional/client_projects/astravue/task_master_project/task_master_backend/.aws-sam/auto-dependency-layer/getTaskByIdFunction7e50a5a5DepLayer
+      Description: Auto created layer for dependencies of function getTaskByIdFunction
+      LayerName: task-master-useraa159203-getTaskByIdFunction7e50a5a5-DepLayer
+      RetentionPolicy: Delete
+    Type: AWS::Serverless::LayerVersion
+  getTasksByProjectFunctiona226f81eDepLayer:
+    Metadata:
+      CreatedBy: AWS SAM CLI sync command
+    Properties:
+      CompatibleRuntimes:
+      - nodejs22.x
+      ContentUri: /home/surya/professional/client_projects/astravue/task_master_project/task_master_backend/.aws-sam/auto-dependency-layer/getTasksByProjectFunctiona226f81eDepLayer
+      Description: Auto created layer for dependencies of function getTasksByProjectFunction
+      LayerName: task-master-useraa159203-getTasksByProjectFuncta226f81e-DepLayer
+      RetentionPolicy: Delete
+    Type: AWS::Serverless::LayerVersion
+  getUsersByProjectFunction09607603DepLayer:
+    Metadata:
+      CreatedBy: AWS SAM CLI sync command
+    Properties:
+      CompatibleRuntimes:
+      - nodejs22.x
+      ContentUri: /home/surya/professional/client_projects/astravue/task_master_project/task_master_backend/.aws-sam/auto-dependency-layer/getUsersByProjectFunction09607603DepLayer
+      Description: Auto created layer for dependencies of function getUsersByProjectFunction
+      LayerName: task-master-useraa159203-getUsersByProjectFunct09607603-DepLayer
+      RetentionPolicy: Delete
+    Type: AWS::Serverless::LayerVersion
+  synchronizeModelsFunction3f54f328DepLayer:
+    Metadata:
+      CreatedBy: AWS SAM CLI sync command
+    Properties:
+      CompatibleRuntimes:
+      - nodejs22.x
+      ContentUri: /home/surya/professional/client_projects/astravue/task_master_project/task_master_backend/.aws-sam/auto-dependency-layer/synchronizeModelsFunction3f54f328DepLayer
+      Description: Auto created layer for dependencies of function synchronizeModelsFunction
+      LayerName: task-master-useraa159203-synchronizeModelsFunct3f54f328-DepLayer
+      RetentionPolicy: Delete
+    Type: AWS::Serverless::LayerVersion
+  updateTaskByIdFunctionf422d4efDepLayer:
+    Metadata:
+      CreatedBy: AWS SAM CLI sync command
+    Properties:
+      CompatibleRuntimes:
+      - nodejs22.x
+      ContentUri: /home/surya/professional/client_projects/astravue/task_master_project/task_master_backend/.aws-sam/auto-dependency-layer/updateTaskByIdFunctionf422d4efDepLayer
+      Description: Auto created layer for dependencies of function updateTaskByIdFunction
+      LayerName: task-master-useraa159203-updateTaskByIdFunctionf422d4ef-DepLayer
+      RetentionPolicy: Delete
+    Type: AWS::Serverless::LayerVersion
+Transform: AWS::Serverless-2016-10-31

@@ -2,7 +2,7 @@ import {
   CognitoIdentityProviderClient,
   AdminCreateUserCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { User } from "../db/connection.mjs";
+import { User, Project, ProjectUser } from "../db/connection.mjs";
 
 const USER_POOL_ID = process.env.USER_POOL_ID;
 const createUserInCognito = async (username, password, user_attributes) => {
@@ -20,38 +20,43 @@ const createUserInCognito = async (username, password, user_attributes) => {
 };
 
 export const findOrCreateUser = async (email) => {
-	const user = await User.findOne({ where: { email: email } });
-	if (user) {
-		return user;
-	}
-	return await User.build({ email: email }).save();
-	
-});
+  const user = await User.findOne({ where: { email: email } });
+  if (user) {
+    return { user, created: false };
+  }
+  return { user: await User.build({ email: email }).save(), created: true };
+};
 export const handler = async (event) => {
   const body = JSON.parse(event.body);
-  const username = body.username;
-  const password = body.password;
-	const project = body.project;
+  const email = body.email;
+  const projectId = body.projectId;
   const user_attributes = [];
   let res = {};
   try {
-	const user = await findOrCreateUser(username);
-    if(!user) {await createUserInCognito(username, password, user_attributes)};
-	await project.setUser(findUser);
+    const { user, created } = await findOrCreateUser(email);
+    if (created) {
+      await createUserInCognito(email, "Password@01", user_attributes);
+    }
+    const project = await Project.findOne({ where: { id: projectId } });
+    await ProjectUser.create({ ProjectId: project.id, UserId: user.id });
     res = {
       statusCode: 200,
-		headers: {
-			"Access-Control-Allow-Origin": "*",
-			"Access-Control-Allow-Credentials": true,
-		},
-		body: JSON.stringify({detail: "User created successfully"}),
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+      },
+      body: JSON.stringify({ detail: "User created successfully" }),
     };
   } catch (err) {
     console.log("Error", err);
-    res = { statusCode: 500,
-		headers: {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Credentials": true, }, 
-		body: JSON.stringify({error: `Error creating user: ${err.message}`}) 
-	};
+    res = {
+      statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+      },
+      body: JSON.stringify({ error: `Error creating user: ${err.message}` }),
+    };
   }
   return res;
 };

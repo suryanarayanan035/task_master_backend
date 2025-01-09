@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  task_master_users
+  task_master_backend
 Transform:
 - AWS::Serverless-2016-10-31
 
